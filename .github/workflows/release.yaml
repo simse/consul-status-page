@@ -33,7 +33,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: simse/consul-status-page
+          images: ghcr.io/simse/consul-status-page
 
       -
         name: Build and push
