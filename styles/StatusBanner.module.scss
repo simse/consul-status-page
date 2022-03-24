@@ -1,0 +1,26 @@
+.banner {
+    padding: 16px 16px;
+    display: flex;
+    justify-content: space-between;
+
+    &.ok {
+        background: #008000;
+    }
+
+    &.warning {
+        background: #cc4400;
+    }
+
+    &.error {
+        background: #e60000;
+    }
+}
+
+.banner p {
+    margin: 0;
+    font-size: 1.1em;
+
+    &:first-child {
+        font-weight: 700;
+    }
+}
