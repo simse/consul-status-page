@@ -12,9 +12,9 @@ interface StatusBannerProps {
 }
 
 const statusColourMap = (status: Status): string => {
-    if(status === Status.Ok) return "ok"
+    if(status === Status.Passing) return "ok"
     // if(status === Status.Yellow) return "unknown"
-    if(status === Status.Error) return "error"
+    if(status === Status.Critical) return "error"
 
     return "warning"
 }

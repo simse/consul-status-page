@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { ConsulServiceStatus } from '../../lib/types'
+import { Status } from '../../lib/types'
 import fetch from 'node-fetch'
 
 import { parseTagsForMetadata, seeServices, getSeenServices, mergeServiceStatuses } from '../../lib/consul'
@@ -25,7 +26,7 @@ export default async function handler(
       enabledServices.push({
         id: serviceId,
         tags: parsedServices[serviceId],
-        status: 'critical'
+        status: Status.Critical
       })
     }
   })
@@ -41,7 +42,13 @@ export default async function handler(
     let serviceStatus = await fetch(process.env.CONSUL_ADDRESS + 'v1/health/checks/' + service.id)
     let parsedServiceStatus = await serviceStatus.json() as any
 
-    service.status = parsedServiceStatus[0].Status
+    service.status = Status.Critical
+
+    let statusText = parsedServiceStatus[0].Status
+
+    if(statusText === "passing") {
+      service.status = Status.Passing
+    }
 
     return service
   }))
@@ -54,6 +61,27 @@ export default async function handler(
     service.meta = parseTagsForMetadata(service.tags)
 
     return service
+  })
+
+  // filter visible services
+  const visibleTags = process.env.VISIBLE_TAGS?.split(',')
+  serviceStatuses = serviceStatuses.filter(service => {
+    let visible = false
+    
+    // services with no tags always pass
+    if(service.meta?.tags === null) visible = true
+
+    // if no visible tags have been set in config, all services pass
+    if(!visibleTags) visible = true
+
+    // check if any tags are visible
+    service.meta?.tags?.forEach(tag => {
+      if(visibleTags?.includes(tag)) {
+        visible = true
+      }
+    })
+
+    return visible
   })
 
   res.status(200).json(serviceStatuses)

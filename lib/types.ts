@@ -1,19 +1,25 @@
 enum Status {
-  Ok,
+  Passing,
   Warning,
-  Error
+  Critical
+}
+
+interface ConsulServicesResponse {
+  [key: string]: Array<string>
 }
 
 interface ConsulServiceStatus {
   id: string
   meta?: ConsulServiceMetadata
   tags: Array<string>
-  status: string
+  status: Status
 }
 
 interface ConsulServiceMetadata {
   title: string
   description?: string
+  category?: string
+  tags?: Array<string>
 }
 
 export {
@@ -22,5 +28,6 @@ export {
 
 export type {
   ConsulServiceStatus,
-  ConsulServiceMetadata
+  ConsulServiceMetadata,
+  ConsulServicesResponse
 }

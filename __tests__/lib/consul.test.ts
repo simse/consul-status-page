@@ -1,4 +1,5 @@
-import { parseTagsForMetadata, getSeenServices, seeServices } from '../../lib/consul.js'
+// functions to test
+import { parseTagsForMetadata, getSeenServices, seeServices, Consul } from '../../lib/consul.js'
 
 // parseTagsForMetadata
 // perfect scenario
@@ -30,8 +31,13 @@ test('parse and ignore irrelevant tags and return meta correctly', () => {
     })
 })
 
-
+/*
 // getSeenServices
 test('getSeenServices returns list of seen services', () => {
 
-})
+})*/
+/*
+// Consul/getServices
+test('Consul.getServices returns list of services and tags', () => {
+    
+})*/

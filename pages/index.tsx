@@ -1,11 +1,13 @@
 import type { NextPage } from 'next'
 
+import { groupBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 // types
+import type { ConsulServiceStatus } from '../lib/types'
 import { Status } from '../lib/types'
 
 // components
@@ -17,7 +19,7 @@ interface Props {
 }
 
 const Home: NextPage<Props> = () => {
-  const [services, setServices] = useState<any>([])
+  const [services, setServices] = useState<Array<ConsulServiceStatus>>([])
   const [lastUpdated, setLastUpdated] = useState<Date>()
 
   const refreshServices = () => {
@@ -28,12 +30,12 @@ const Home: NextPage<Props> = () => {
   }
 
   const status = (services: any) => {
-    let statusColour = Status.Ok;
+    let statusColour = Status.Passing
     let statusMessage = "No issues detected"
 
     services.forEach((service: any) => {
       if(service.status === 'critical') {
-        statusColour = Status.Error
+        statusColour = Status.Critical
         statusMessage = "Some services are down"
       }
     })
@@ -42,6 +44,10 @@ const Home: NextPage<Props> = () => {
       colour: statusColour,
       message: statusMessage
     }
+  }
+
+  const servicesInCategories = () => {
+    return groupBy(services, 'meta.category')
   }
 
   useEffect(() => {
@@ -73,11 +79,15 @@ const Home: NextPage<Props> = () => {
           <StatusBanner message={status(services).message} status={status(services).colour} lastUpdated={lastUpdated} />
         </div>
 
-        <div className={styles.services}>
-          {services?.map((service: any) => (
-            <ServiceStatus key={service.id} id={service.id} title={service.meta.title} description={service.meta.description} status={service.status} />
-          ))}
-        </div>
+        {Object.keys(servicesInCategories()).map(category => (
+          <div className={styles.services} key={category}>
+            <h2>{category === 'null' ? '' : category}</h2>
+
+            {servicesInCategories()[category].map((service: any) => (
+              <ServiceStatus key={service.id} id={service.id} title={service.meta.title} description={service.meta.description} status={service.status} />
+            ))}
+          </div>
+        ))}
       </main>
     </div>
   )
